@@ -184,6 +184,11 @@ void SysTick_Handler(void)
   /* USER CODE END SysTick_IRQn 1 */
 }
 
+void AUDIO_IN_I2S_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(hAudioInI2s.hdmarx);
+}
+
 /******************************************************************************/
 /* STM32F4xx Peripheral Interrupt Handlers                                    */
 /* Add here the Interrupt Handlers for the used peripherals.                  */

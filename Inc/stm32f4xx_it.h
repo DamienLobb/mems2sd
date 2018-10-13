@@ -57,6 +57,12 @@ void DebugMon_Handler(void);
 void PendSV_Handler(void);
 void SysTick_Handler(void);
 
+void AUDIO_IN_DFSDM_DMA_1st_CH_IRQHandler(void);
+void AUDIO_IN_DFSDM_DMA_2nd_CH_IRQHandler(void);
+void AUDIO_IN_DFSDM_DMA_3rd_CH_IRQHandler(void);
+void AUDIO_IN_DFSDM_DMA_4th_CH_IRQHandler(void);
+void AUDIO_IN_I2S_IRQHandler(void);
+
 #ifdef __cplusplus
 }
 #endif
