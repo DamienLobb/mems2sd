@@ -47,6 +47,7 @@ extern "C" {
   /* Includes ------------------------------------------------------------------*/
   
 #include "../../../Middlewares/ST/STM32_Audio/Addons/PDM/inc/pdm2pcm_glo.h"
+#include "stm32f4xx_hal_i2s.h"
 
   /** @addtogroup BSP
   * @{

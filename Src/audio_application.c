@@ -63,9 +63,7 @@
 /** @defgroup AUDIO_APPLICATION_Exported_Variables 
 * @{
 */
-#ifndef USE_STM32L4XX_NUCLEO 
 uint16_t PDM_Buffer[((((AUDIO_CHANNELS * AUDIO_SAMPLING_FREQUENCY) / 1000) * MAX_DECIMATION_FACTOR) / 16)* N_MS ];
-#endif
 uint16_t PCM_Buffer[((AUDIO_CHANNELS*AUDIO_SAMPLING_FREQUENCY)/1000)  * N_MS ];
 
 /**
@@ -116,10 +114,8 @@ void BSP_AUDIO_IN_TransferComplete_CallBack(void)
 void AudioProcess(void)
 {
   /*for L4 PDM to PCM conversion is performed in hardware by DFSDM peripheral*/
-#ifndef USE_STM32L4XX_NUCLEO 
   BSP_AUDIO_IN_PDMToPCM((uint16_t * )PDM_Buffer,PCM_Buffer);  
-#endif  
-  Send_Audio_to_USB((int16_t *)PCM_Buffer, (AUDIO_SAMPLING_FREQUENCY/1000)*AUDIO_CHANNELS * N_MS );  
+  //Send_Audio_to_USB((int16_t *)PCM_Buffer, (AUDIO_SAMPLING_FREQUENCY/1000)*AUDIO_CHANNELS * N_MS );
 }
 
 /**
@@ -145,11 +141,7 @@ void Init_Acquisition_Peripherals(uint32_t AudioFreq, uint32_t ChnlNbrIn, uint32
 */
 void Start_Acquisition(void)
 {  
-#ifdef USE_STM32L4XX_NUCLEO
-  BSP_AUDIO_IN_Record(PCM_Buffer,0);  
-#else
   BSP_AUDIO_IN_Record(PDM_Buffer,0);   
-#endif
 }
 /**
 * @}
