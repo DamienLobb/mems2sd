@@ -50,6 +50,7 @@
 #include "stm32f4xx_hal.h"
 #include "fatfs.h"
 #include "pdm2pcm.h"
+#include "audio_application.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -147,6 +148,10 @@ int main(void) {
 	fr = f_write(&fil, "Hello, World!!\r\n", 16, &bytes_written);
 
 	f_close(&fil);
+
+	/* Start Recording */
+	Init_Acquisition_Peripherals(AUDIO_SAMPLING_FREQUENCY, AUDIO_CHANNELS, 0);
+	Start_Acquisition();
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
