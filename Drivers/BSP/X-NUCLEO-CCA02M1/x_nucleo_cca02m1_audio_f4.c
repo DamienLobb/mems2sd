@@ -39,6 +39,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 #include "x_nucleo_cca02m1_audio_f4.h"
+#include "stm32f4xx_hal_tim.h"
 
 /** @addtogroup BSP
 * @{

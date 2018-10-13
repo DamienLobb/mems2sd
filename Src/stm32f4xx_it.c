@@ -35,6 +35,8 @@
 #include "stm32f4xx.h"
 #include "stm32f4xx_it.h"
 
+#include "x_nucleo_cca02m1_audio_f4.h"
+
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
