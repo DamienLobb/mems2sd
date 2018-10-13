@@ -48,11 +48,11 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx_hal.h"
-#include "fatfs.h"
 #include "pdm2pcm.h"
 #include "audio_application.h"
 
 /* USER CODE BEGIN Includes */
+#include "save2sd.h"
 
 /* USER CODE END Includes */
 
@@ -70,11 +70,6 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 
-/* Fatfs Files and interface */
-FATFS fs;
-FRESULT fr;
-FIL fil;
-unsigned int bytes_written;
 
 /* USER CODE END PV */
 
@@ -133,21 +128,17 @@ int main(void) {
 	MX_PDM2PCM_Init();
 	/* USER CODE BEGIN 2 */
 
+	/* This manages a buffer which the audio data is written to
+	 * When this buffer is filled the data is then written to the SD card.
+	 */
+	if(sdStart())
+	{
+		// TODO Write to error log
+	}
+
 	/* USER CODE END 2 */
 
 	/* Test the SDIO write works */
-
-	unsigned int bytes_written;
-
-	f_mount(&fs, "0:", 1);
-
-	fr = f_open(&fil, "0:DUS", FA_CREATE_ALWAYS | FA_WRITE | FA_READ);
-	if (fr)
-		return (int) fr;
-
-	fr = f_write(&fil, "Hello, World!!\r\n", 16, &bytes_written);
-
-	f_close(&fil);
 
 	/* Start Recording */
 	Init_Acquisition_Peripherals(AUDIO_SAMPLING_FREQUENCY, AUDIO_CHANNELS, 0);
@@ -157,9 +148,10 @@ int main(void) {
 	/* USER CODE BEGIN WHILE */
 	while (1) {
 
-		/* USER CODE END WHILE */
-
-		/* USER CODE BEGIN 3 */
+		if(sd_total_bytes_written > 400000)
+		{
+			sdStop();
+		}
 
 	}
 	/* USER CODE END 3 */

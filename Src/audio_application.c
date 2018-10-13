@@ -44,6 +44,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "audio_application.h"
 
+#include "save2sd.h"
+
 /** @addtogroup X_CUBE_MEMSMIC1_Applications
 * @{
 */ 
@@ -90,6 +92,7 @@ uint16_t PCM_Buffer[((AUDIO_CHANNELS*AUDIO_SAMPLING_FREQUENCY)/1000)  * N_MS ];
 void BSP_AUDIO_IN_HalfTransfer_CallBack(void)
 {
   AudioProcess();
+  save2sdWrite(PCM_Buffer, 32);
 }
 
 /**
@@ -100,6 +103,7 @@ void BSP_AUDIO_IN_HalfTransfer_CallBack(void)
 void BSP_AUDIO_IN_TransferComplete_CallBack(void)
 {
   AudioProcess();
+  save2sdWrite(PCM_Buffer+16, 32); // Second half of the buffer
 }
 
 /**

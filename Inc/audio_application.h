@@ -64,7 +64,7 @@
 Need to find out how many of these are actually needed for our project and any need to
 be copied / merged in to the files from this new project
 
-Below we will include only the one required or the equivilent from the current project
+Below we include only the ones required or the equivalent from the current project
 
  *
  */
@@ -113,7 +113,7 @@ modification in the application layer developed with the older versions of the d
 #endif
 
 
-/*Uncomment this define if you want to configure and start acquisition 
+/*Uncomment this define if you want to configure and start acquisition
 independentrly from USB functionalities*/
 #define DISABLE_USB_DRIVEN_ACQUISITION
 
