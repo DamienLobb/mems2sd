@@ -148,7 +148,7 @@ int main(void) {
 	/* USER CODE BEGIN WHILE */
 	while (1) {
 
-		if(sd_total_bytes_written > 400000)
+		if(sd_total_bytes_written > 200000)
 		{
 			sdStop();
 		}
@@ -238,14 +238,14 @@ static void MX_CRC_Init(void) {
 static void MX_I2S2_Init(void) {
 
 	hi2s2.Instance = SPI2;
-	hi2s2.Init.Mode = I2S_MODE_MASTER_TX;
-	hi2s2.Init.Standard = I2S_STANDARD_PHILIPS;
-	hi2s2.Init.DataFormat = I2S_DATAFORMAT_16B;
+	hi2s2.Init.Mode = I2S_MODE_MASTER_RX;
+	hi2s2.Init.Standard = I2S_STANDARD_MSB;
+	hi2s2.Init.DataFormat = I2S_DATAFORMAT_32B;
 	hi2s2.Init.MCLKOutput = I2S_MCLKOUTPUT_DISABLE;
-	hi2s2.Init.AudioFreq = I2S_AUDIOFREQ_8K;
-	hi2s2.Init.CPOL = I2S_CPOL_LOW;
+	hi2s2.Init.AudioFreq = 16000;
+	hi2s2.Init.CPOL = I2S_CPOL_HIGH;
 	hi2s2.Init.ClockSource = I2S_CLOCK_PLL;
-	hi2s2.Init.FullDuplexMode = I2S_FULLDUPLEXMODE_ENABLE;
+	hi2s2.Init.FullDuplexMode = I2S_FULLDUPLEXMODE_DISABLE;
 	if (HAL_I2S_Init(&hi2s2) != HAL_OK) {
 		_Error_Handler(__FILE__, __LINE__);
 	}

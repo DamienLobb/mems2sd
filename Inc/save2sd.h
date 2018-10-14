@@ -21,7 +21,7 @@ FRESULT fr;
 FIL fil;
 
 uint16_t bytes_in_buffer;
-uint8_t *sd_buffer_ptr;
+int8_t *sd_buffer_ptr;
 
 /* Total number of bytes written to the SD card
  * since sdStart was called
@@ -29,9 +29,9 @@ uint8_t *sd_buffer_ptr;
 uint32_t sd_total_bytes_written;
 
 /* Create a buffer to hold the */
-uint8_t sd_buffer[SD_CARD_BUFFER_SZ];
+int8_t sd_buffer[SD_CARD_BUFFER_SZ];
 
-uint8_t save2sdWrite(void *buffer, uint16_t num_of_bytes);
+uint8_t save2sdWrite(uint16_t *buffer, uint16_t num_of_bytes);
 
 uint8_t sdStart();
 

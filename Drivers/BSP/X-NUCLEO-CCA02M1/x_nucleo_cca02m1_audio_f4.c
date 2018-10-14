@@ -192,8 +192,7 @@ __weak uint8_t BSP_AUDIO_IN_Init(uint32_t AudioFreq, uint32_t BitRes, uint32_t C
   }
   
   
-  X_NUCLEO_CCA02M1_Handler.DecimationFactor = (X_NUCLEO_CCA02M1_Handler.PDM_Clock_Freq * 1000) /
-    X_NUCLEO_CCA02M1_Handler.PCM_Sampling_Freq;
+  X_NUCLEO_CCA02M1_Handler.DecimationFactor = (X_NUCLEO_CCA02M1_Handler.PDM_Clock_Freq * 1000) / X_NUCLEO_CCA02M1_Handler.PCM_Sampling_Freq;
   X_NUCLEO_CCA02M1_Handler.PdmBufferSize = (X_NUCLEO_CCA02M1_Handler.PDM_Clock_Freq / 8) * 2 * N_MS_PER_INTERRUPT;
   
   uint16_t PDM_I2S_Clock = X_NUCLEO_CCA02M1_Handler.PDM_Clock_Freq;
