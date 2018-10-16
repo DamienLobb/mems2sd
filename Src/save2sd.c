@@ -20,6 +20,7 @@ uint8_t save2sdWrite(uint16_t *buffer, uint16_t num_of_elements)
 {
 	uint8_t ret = 0;
 	unsigned int bytes_written;
+	//uint32_t start = HAL_GetTick();
 
 	uint16_t bytes_from_elements =  num_of_elements * 2;
 
@@ -36,14 +37,17 @@ uint8_t save2sdWrite(uint16_t *buffer, uint16_t num_of_elements)
 	{
 		/* We have filled the buffer write to the card*/
 		memcpy(sd_buffer_ptr, buffer, bytes_from_elements);
+
 		if(FR_OK == f_write(&fil, sd_buffer, SD_CARD_BUFFER_SZ, &bytes_written))
 		{
 			sd_total_bytes_written += bytes_written;
+
 		}
 		else
 			ret = -1;
 
-		resetBuffer();
+		bytes_in_buffer = 0;
+		sd_buffer_ptr = sd_buffer;
 	}
 	else
 	{
@@ -77,8 +81,13 @@ uint8_t sdStart()
 	resetBuffer();
 
 	if(FR_OK == f_mount(&fs, "0:", 1))
-		if(FR_OK==f_open(&fil, "0:SAV", FA_CREATE_ALWAYS | FA_WRITE | FA_READ))
+		if(FR_OK==f_open(&fil, "0:SAV2.raw", FA_CREATE_ALWAYS | FA_WRITE | FA_READ))
 			ret = 0;
+	FRESULT res = f_lseek(&fil, 400000);
+		if(res != FR_OK) return ret;
+
+		res = f_lseek(&fil, 0);
+		if(res != FR_OK) return ret;
 
 	return ret;
 }

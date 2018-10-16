@@ -13,7 +13,7 @@
 #define SAVE2SD_H_
 #include "fatfs.h"
 
-#define SD_CARD_BUFFER_SZ 10240
+#define SD_CARD_BUFFER_SZ 51200
 
 /* Fatfs Files and interface */
 FATFS fs;

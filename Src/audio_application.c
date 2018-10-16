@@ -119,7 +119,7 @@ void AudioProcess(void)
   /*for L4 PDM to PCM conversion is performed in hardware by DFSDM peripheral*/
   BSP_AUDIO_IN_PDMToPCM((uint16_t * )PDM_Buffer,PCM_Buffer);  
   //Send_Audio_to_USB((int16_t *)PCM_Buffer, (AUDIO_SAMPLING_FREQUENCY/1000)*AUDIO_CHANNELS * N_MS );
-  save2sdWrite((int16_t *)PCM_Buffer, (AUDIO_SAMPLING_FREQUENCY/1000)*AUDIO_CHANNELS * N_MS);
+  save2sdWrite((uint16_t *)PCM_Buffer, (AUDIO_SAMPLING_FREQUENCY/1000)*AUDIO_CHANNELS * N_MS);
 }
 
 /**

@@ -103,7 +103,7 @@ modification in the application layer developed with the older versions of the d
 
 #define N_MS N_MS_PER_INTERRUPT
 
-#define AUDIO_CHANNELS 2
+#define AUDIO_CHANNELS 4
 #define AUDIO_SAMPLING_FREQUENCY 16000
 
 #if (AUDIO_SAMPLING_FREQUENCY == 8000)

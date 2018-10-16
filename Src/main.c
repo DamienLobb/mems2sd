@@ -148,7 +148,7 @@ int main(void) {
 	/* USER CODE BEGIN WHILE */
 	while (1) {
 
-		if(sd_total_bytes_written > 200000)
+		if(sd_total_bytes_written > 400000)
 		{
 			sdStop();
 		}
