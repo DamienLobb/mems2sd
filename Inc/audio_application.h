@@ -136,6 +136,7 @@ void Init_Acquisition_Peripherals(uint32_t AudioFreq, uint32_t ChnlNbrIn, uint32
 void Start_Acquisition(void);
 //void Error_Handler(void); TODO Commented out. Looks like it prnts line and file name on error
 void AudioProcess(void);
+void AudioProcess2(void);
 
 /**
  * @}
