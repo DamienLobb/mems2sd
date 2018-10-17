@@ -140,7 +140,7 @@ void AudioProcess(void);
 /**
  * @}
  */
-
+uint16_t PCM_Buffer[((AUDIO_CHANNELS*AUDIO_SAMPLING_FREQUENCY)/1000)  * N_MS ];
 /**
  * @}
  */
