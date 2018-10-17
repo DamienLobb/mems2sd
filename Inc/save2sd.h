@@ -13,7 +13,8 @@
 #define SAVE2SD_H_
 #include "fatfs.h"
 
-#define SD_CARD_BUFFER_SZ 51200
+#define SD_CARD_BUFFER_SZ 25600
+
 
 /* Fatfs Files and interface */
 FATFS fs;
@@ -22,6 +23,8 @@ FIL fil;
 
 uint16_t bytes_in_buffer;
 int8_t *sd_buffer_ptr;
+int8_t sd_buffer_num;
+int8_t PCM_Buffer_num;
 
 /* Total number of bytes written to the SD card
  * since sdStart was called
@@ -29,7 +32,7 @@ int8_t *sd_buffer_ptr;
 uint32_t sd_total_bytes_written;
 
 /* Create a buffer to hold the */
-int8_t sd_buffer[SD_CARD_BUFFER_SZ];
+int8_t sd_buffer[2][SD_CARD_BUFFER_SZ];
 
 uint8_t save2sdWrite(uint16_t *buffer, uint16_t num_of_bytes);
 

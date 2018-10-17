@@ -66,7 +66,9 @@
 * @{
 */
 uint16_t PDM_Buffer[((((AUDIO_CHANNELS * AUDIO_SAMPLING_FREQUENCY) / 1000) * MAX_DECIMATION_FACTOR) / 16)* N_MS ];
-uint16_t PCM_Buffer[((AUDIO_CHANNELS*AUDIO_SAMPLING_FREQUENCY)/1000)  * N_MS ];
+uint16_t PCM_Buffer[2][((AUDIO_CHANNELS*AUDIO_SAMPLING_FREQUENCY)/1000)  * N_MS ];
+
+
 
 /**
 * @}
@@ -117,9 +119,10 @@ void BSP_AUDIO_IN_TransferComplete_CallBack(void)
 void AudioProcess(void)
 {
   /*for L4 PDM to PCM conversion is performed in hardware by DFSDM peripheral*/
-  BSP_AUDIO_IN_PDMToPCM((uint16_t * )PDM_Buffer,PCM_Buffer);  
+  BSP_AUDIO_IN_PDMToPCM((uint16_t * )PDM_Buffer,PCM_Buffer[PCM_Buffer_num]);
   //Send_Audio_to_USB((int16_t *)PCM_Buffer, (AUDIO_SAMPLING_FREQUENCY/1000)*AUDIO_CHANNELS * N_MS );
-  save2sdWrite((uint16_t *)PCM_Buffer, (AUDIO_SAMPLING_FREQUENCY/1000)*AUDIO_CHANNELS * N_MS);
+  save2sdWrite((uint16_t *)PCM_Buffer[PCM_Buffer_num], (AUDIO_SAMPLING_FREQUENCY/1000)*AUDIO_CHANNELS * N_MS);
+  PCM_Buffer_num = (PCM_Buffer_num+1)%2;
 }
 
 /**
