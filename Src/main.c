@@ -48,6 +48,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx_hal.h"
+
 #include "pdm2pcm.h"
 #include "audio_application.h"
 
@@ -78,9 +79,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_CRC_Init(void);
-static void MX_I2S2_Init(void);
 static void MX_SDIO_SD_Init(void);
-static void MX_SPI3_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -121,9 +120,7 @@ int main(void) {
 	MX_GPIO_Init();
 	MX_USART2_UART_Init();
 	MX_CRC_Init();
-	MX_I2S2_Init();
 	MX_SDIO_SD_Init();
-	MX_SPI3_Init();
 	MX_FATFS_Init();
 	MX_PDM2PCM_Init();
 	/* USER CODE BEGIN 2 */
@@ -147,11 +144,16 @@ int main(void) {
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
 	while (1) {
-
-		if(sd_total_bytes_written > 400000)
-		{
-			sdStop();
+		if (audio_ready){
+			AudioProcess2();
 		}
+
+		/* We have filled the buffer write to the card*/
+	//	SDwrite();
+			if(sd_total_bytes_written > 400000)
+			{
+ 			sdStop();
+			}
 
 	}
 	/* USER CODE END 3 */
@@ -234,23 +236,6 @@ static void MX_CRC_Init(void) {
 
 }
 
-/* I2S2 init function */
-static void MX_I2S2_Init(void) {
-
-	hi2s2.Instance = SPI2;
-	hi2s2.Init.Mode = I2S_MODE_MASTER_RX;
-	hi2s2.Init.Standard = I2S_STANDARD_MSB;
-	hi2s2.Init.DataFormat = I2S_DATAFORMAT_32B;
-	hi2s2.Init.MCLKOutput = I2S_MCLKOUTPUT_DISABLE;
-	hi2s2.Init.AudioFreq = 16000;
-	hi2s2.Init.CPOL = I2S_CPOL_HIGH;
-	hi2s2.Init.ClockSource = I2S_CLOCK_PLL;
-	hi2s2.Init.FullDuplexMode = I2S_FULLDUPLEXMODE_DISABLE;
-	if (HAL_I2S_Init(&hi2s2) != HAL_OK) {
-		_Error_Handler(__FILE__, __LINE__);
-	}
-
-}
 
 /* SDIO init function */
 static void MX_SDIO_SD_Init(void) {
@@ -265,27 +250,7 @@ static void MX_SDIO_SD_Init(void) {
 
 }
 
-/* SPI3 init function */
-static void MX_SPI3_Init(void) {
 
-	/* SPI3 parameter configuration*/
-	hspi3.Instance = SPI3;
-	hspi3.Init.Mode = SPI_MODE_MASTER;
-	hspi3.Init.Direction = SPI_DIRECTION_2LINES;
-	hspi3.Init.DataSize = SPI_DATASIZE_8BIT;
-	hspi3.Init.CLKPolarity = SPI_POLARITY_LOW;
-	hspi3.Init.CLKPhase = SPI_PHASE_1EDGE;
-	hspi3.Init.NSS = SPI_NSS_SOFT;
-	hspi3.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
-	hspi3.Init.FirstBit = SPI_FIRSTBIT_MSB;
-	hspi3.Init.TIMode = SPI_TIMODE_DISABLE;
-	hspi3.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-	hspi3.Init.CRCPolynomial = 10;
-	if (HAL_SPI_Init(&hspi3) != HAL_OK) {
-		_Error_Handler(__FILE__, __LINE__);
-	}
-
-}
 
 /* USART2 init function */
 static void MX_USART2_UART_Init(void) {

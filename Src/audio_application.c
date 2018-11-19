@@ -43,7 +43,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "audio_application.h"
-
+#include <string.h>
 #include "save2sd.h"
 
 /** @addtogroup X_CUBE_MEMSMIC1_Applications
@@ -69,7 +69,7 @@ uint16_t PDM_Buffer[((((AUDIO_CHANNELS * AUDIO_SAMPLING_FREQUENCY) / 1000) * MAX
 uint16_t PCM_Buffer[((AUDIO_CHANNELS*AUDIO_SAMPLING_FREQUENCY)/1000)  * N_MS ];
 uint16_t PCM_Buffer2[((AUDIO_CHANNELS*AUDIO_SAMPLING_FREQUENCY)/1000)  * N_MS];
 
-
+bool audio_ready = false;
 
 /**
 * @}
@@ -104,8 +104,7 @@ void BSP_AUDIO_IN_HalfTransfer_CallBack(void)
 */
 void BSP_AUDIO_IN_TransferComplete_CallBack(void)
 {
-	if (counter == 199){
-		AudioProcess2();}
+	if (audio_ready) {}
 	else{
 		AudioProcess();}
   //save2sdWrite(PCM_Buffer+16, 32); // Second half of the buffer
@@ -127,15 +126,13 @@ void AudioProcess(void)
   //Send_Audio_to_USB((int16_t *)PCM_Buffer, (AUDIO_SAMPLING_FREQUENCY/1000)*AUDIO_CHANNELS * N_MS );
   save2sdWrite((uint16_t *)PCM_Buffer, (AUDIO_SAMPLING_FREQUENCY/1000)*AUDIO_CHANNELS * N_MS);
 
+
 }
 
 void AudioProcess2(void)
 {
   /*for L4 PDM to PCM conversion is performed in hardware by DFSDM peripheral*/
-  BSP_AUDIO_IN_PDMToPCM((uint16_t * )PDM_Buffer,PCM_Buffer);
-  //Send_Audio_to_USB((int16_t *)PCM_Buffer, (AUDIO_SAMPLING_FREQUENCY/1000)*AUDIO_CHANNELS * N_MS );
-  //save2sdWrite2((uint16_t *)PCM_Buffer, (AUDIO_SAMPLING_FREQUENCY/1000)*AUDIO_CHANNELS * N_MS);
-  //memcpy(PCM_Buffer, PCM_Buffer2, 64);
+
   save2sdWrite((uint16_t *)PCM_Buffer, (AUDIO_SAMPLING_FREQUENCY/1000)*AUDIO_CHANNELS * N_MS);
 }
 /**

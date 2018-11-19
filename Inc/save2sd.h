@@ -12,8 +12,9 @@
 #ifndef SAVE2SD_H_
 #define SAVE2SD_H_
 #include "fatfs.h"
+#include "stdbool.h"
 
-#define SD_CARD_BUFFER_SZ 25600
+#define SD_CARD_BUFFER_SZ 32768
 
 
 /* Fatfs Files and interface */
@@ -24,7 +25,7 @@ FIL fil;
 uint16_t bytes_in_buffer;
 int8_t *sd_buffer_ptr;
 int8_t sd_buffer_num;
-
+bool audio_ready;
 uint8_t counter;
 
 /* Total number of bytes written to the SD card
@@ -41,6 +42,7 @@ uint8_t save2sdWrite2(uint16_t *buffer, uint16_t num_of_bytes);
 uint8_t sdStart();
 
 uint8_t sdStop();
+void SDwrite();
 
 void resetBuffer();
 

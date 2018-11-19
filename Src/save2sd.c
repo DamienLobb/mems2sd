@@ -7,8 +7,10 @@
 
 #include "save2sd.h"
 #include <string.h>
+#include "stdbool.h"
 
 uint8_t counter = 0;
+unsigned int bytes_written;
 /**
  * @brief This will copy data from buffer in to the
  * the sd_card buffer. When this buffer reaches
@@ -29,12 +31,11 @@ uint8_t counter = 0;
 	return ret;
 }*/
 
-
 uint8_t save2sdWrite(uint16_t *buffer, uint16_t num_of_elements)
 {
 
 	uint8_t ret = 0;
-	unsigned int bytes_written;
+//	unsigned int bytes_written;
 	//uint32_t start = HAL_GetTick();
 
 	uint16_t bytes_from_elements =  num_of_elements * 2;
@@ -51,22 +52,12 @@ uint8_t save2sdWrite(uint16_t *buffer, uint16_t num_of_elements)
 	}
 	else if (byte_count == SD_CARD_BUFFER_SZ)
 	{
-		/* We have filled the buffer write to the card*/
-		//memcpy(sd_buffer_ptr, buffer, bytes_from_elements);
+		audio_ready = true;
+		memcpy(sd_buffer_ptr, buffer, bytes_from_elements);
+		sd_buffer_num = (sd_buffer_num+1)%2;
+		memcpy(sd_buffer_ptr, buffer, bytes_from_elements);
+		SDwrite();
 
-
-		if(FR_OK == f_write(&fil, sd_buffer[sd_buffer_num], SD_CARD_BUFFER_SZ, &bytes_written))
-		{
-			sd_total_bytes_written += bytes_written;
-			sd_buffer_num = (sd_buffer_num+1)%2; //Assigns buffer_num to the remainder of (current value+1)/2
-												//when 0 -> 1, when 1 -> 0
-			memcpy(sd_buffer_ptr, buffer, bytes_from_elements);
-		}
-		else
-			ret = -1;
-		counter = 0;
-		bytes_in_buffer = 0;
-		sd_buffer_ptr = sd_buffer[sd_buffer_num];
 	}
 	else
 	{
@@ -100,7 +91,7 @@ uint8_t sdStart()
 	resetBuffer();
 
 	if(FR_OK == f_mount(&fs, "0:", 1))
-		if(FR_OK==f_open(&fil, "0:SAV2.raw", FA_CREATE_ALWAYS | FA_WRITE | FA_READ))
+		if(FR_OK==f_open(&fil, "0:3test.RAW", FA_CREATE_ALWAYS | FA_WRITE | FA_READ))
 			ret = 0;
 	FRESULT res = f_lseek(&fil, 400000);	//Expands file in advance to make writes faster
 		if(res != FR_OK) return ret;
@@ -133,4 +124,24 @@ void resetBuffer()
 	/* Set the number of byes to zero*/
 	bytes_in_buffer = 0;
 	sd_buffer_ptr = sd_buffer[sd_buffer_num];
+}
+
+void SDwrite(){
+if (audio_ready){
+
+					if(FR_OK == f_write(&fil, sd_buffer[(sd_buffer_num+1)%2], SD_CARD_BUFFER_SZ, &bytes_written))
+					{
+						sd_total_bytes_written += bytes_written;
+
+						 //Assigns buffer_num to the remainder of (current value+1)/2
+															//when 0 -> 1, when 1 -> 0
+					//	memcpy(sd_buffer_ptr, buffer, bytes_from_elements);
+					}
+					else{
+					}
+					audio_ready = false;
+					counter = 0;
+					bytes_in_buffer = 0;
+					sd_buffer_ptr = sd_buffer[sd_buffer_num];
+				}
 }

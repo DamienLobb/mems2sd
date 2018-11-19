@@ -426,8 +426,8 @@ typedef struct __SPI_HandleTypeDef
 /* Initialization/de-initialization functions  **********************************/
 HAL_StatusTypeDef HAL_SPI_Init(SPI_HandleTypeDef *hspi);
 HAL_StatusTypeDef HAL_SPI_DeInit (SPI_HandleTypeDef *hspi);
-void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi);
-void HAL_SPI_MspDeInit(SPI_HandleTypeDef *hspi);
+//void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi);
+//void HAL_SPI_MspDeInit(SPI_HandleTypeDef *hspi);
 /**
   * @}
   */
