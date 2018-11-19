@@ -48,7 +48,9 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
-
+#include "wifi_module.h"
+#include "wifi_globals.h"
+#include "stm32_spwf_wifi.h"
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
@@ -190,59 +192,106 @@ void HAL_SD_MspDeInit(SD_HandleTypeDef* hsd)
 
 
 
-void HAL_UART_MspInit(UART_HandleTypeDef* huart)
+void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 {
+  GPIO_InitTypeDef  GPIO_InitStruct;
 
-  GPIO_InitTypeDef GPIO_InitStruct;
-  if(huart->Instance==USART2)
+  if (huart==&UartWiFiHandle)
   {
-  /* USER CODE BEGIN USART2_MspInit 0 */
+  /*##-1- Enable peripherals and GPIO Clocks #################################*/
+  /* Enable GPIO TX/RX clock */
+  USARTx_TX_GPIO_CLK_ENABLE();
+  USARTx_RX_GPIO_CLK_ENABLE();
 
-  /* USER CODE END USART2_MspInit 0 */
-    /* Peripheral clock enable */
-    __HAL_RCC_USART2_CLK_ENABLE();
+
+  /* Enable USARTx clock */
+  USARTx_CLK_ENABLE();
+    __SYSCFG_CLK_ENABLE();
+
+#ifdef USE_STM32F1xx_NUCLEO
+   __HAL_AFIO_REMAP_USART3_PARTIAL();
+#endif
+
+  /*##-2- Configure peripheral GPIO ##########################################*/
+  /* UART TX GPIO pin configuration  */
+  GPIO_InitStruct.Pin       = WiFi_USART_TX_PIN;
+  GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
+#if defined (USE_STM32L0XX_NUCLEO) || defined (USE_STM32F4XX_NUCLEO) || defined (USE_STM32L4XX_NUCLEO)
+  GPIO_InitStruct.Pull      = GPIO_NOPULL;
+  GPIO_InitStruct.Alternate = WiFi_USARTx_TX_AF;
+#endif
+#ifdef USE_STM32F1xx_NUCLEO
+   GPIO_InitStruct.Pull     = GPIO_PULLUP;
+#endif
+  GPIO_InitStruct.Speed     = GPIO_SPEED_HIGH;
   
-    /**USART2 GPIO Configuration    
-    PA2     ------> USART2_TX
-    PA3     ------> USART2_RX 
-    */
-    GPIO_InitStruct.Pin = USART_TX_Pin|USART_RX_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(WiFi_USART_TX_GPIO_PORT, &GPIO_InitStruct);
 
-  /* USER CODE BEGIN USART2_MspInit 1 */
+  /* UART RX GPIO pin configuration  */
+  GPIO_InitStruct.Pin = WiFi_USART_RX_PIN;
+#ifdef USE_STM32F1xx_NUCLEO
+  GPIO_InitStruct.Mode      = GPIO_MODE_INPUT;
+#endif
+#if defined (USE_STM32L0XX_NUCLEO) || defined (USE_STM32F4XX_NUCLEO) || defined (USE_STM32L4XX_NUCLEO)
+  GPIO_InitStruct.Alternate = WiFi_USARTx_RX_AF;
+#endif
 
-  /* USER CODE END USART2_MspInit 1 */
+  HAL_GPIO_Init(WiFi_USART_RX_GPIO_PORT, &GPIO_InitStruct);
+
+  /* UART RTS GPIO pin configuration  */
+  GPIO_InitStruct.Pin = WiFi_USART_RTS_PIN;
+#ifdef USE_STM32F1xx_NUCLEO
+  GPIO_InitStruct.Pull     = GPIO_PULLDOWN;
+  GPIO_InitStruct.Mode      = GPIO_MODE_OUTPUT_PP;//GPIO_MODE_AF_PP;
+#endif
+#if defined (USE_STM32L0XX_NUCLEO) || defined (USE_STM32F4XX_NUCLEO) || defined (USE_STM32L4XX_NUCLEO)
+  GPIO_InitStruct.Pull     = GPIO_PULLUP;
+  GPIO_InitStruct.Alternate = WiFi_USARTx_RX_AF;
+#endif
+
+  HAL_GPIO_Init(WiFi_USART_RTS_GPIO_PORT, &GPIO_InitStruct);
+
+  /*##-3- Configure the NVIC for UART ########################################*/
+  /* NVIC for USART */
+	#if defined (USE_STM32L0XX_NUCLEO) || defined (USE_STM32F4XX_NUCLEO) || defined (USE_STM32L4XX_NUCLEO)
+  HAL_NVIC_SetPriority(USARTx_IRQn, 3, 0);
+	#else
+	HAL_NVIC_SetPriority(USARTx_IRQn, 1, 0);
+	#endif
+  HAL_NVIC_EnableIRQ(USARTx_IRQn);
   }
-
 }
 
-void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
+
+/**
+  * @brief UART MSP De-Initialization
+  *        This function frees the hardware resources used in this example:
+  *          - Disable the Peripheral's clock
+  *          - Revert GPIO and NVIC configuration to their default state
+  * @param huart: UART handle pointer
+  * @retval None
+  */
+void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
 {
-
-  if(huart->Instance==USART2)
+  if (huart==&UartWiFiHandle)
   {
-  /* USER CODE BEGIN USART2_MspDeInit 0 */
+  /*##-1- Reset peripherals ##################################################*/
+  USARTx_FORCE_RESET();
+  USARTx_RELEASE_RESET();
 
-  /* USER CODE END USART2_MspDeInit 0 */
-    /* Peripheral clock disable */
-    __HAL_RCC_USART2_CLK_DISABLE();
+  /*##-2- Disable peripherals and GPIO Clocks #################################*/
+  /* Configure UART Tx as alternate function  */
+  HAL_GPIO_DeInit(WiFi_USART_TX_GPIO_PORT, WiFi_USART_TX_PIN);
+  /* Configure UART Rx as alternate function  */
+  HAL_GPIO_DeInit(WiFi_USART_RX_GPIO_PORT, WiFi_USART_RX_PIN);
   
-    /**USART2 GPIO Configuration    
-    PA2     ------> USART2_TX
-    PA3     ------> USART2_RX 
-    */
-    HAL_GPIO_DeInit(GPIOA, USART_TX_Pin|USART_RX_Pin);
-
-  /* USER CODE BEGIN USART2_MspDeInit 1 */
-
-  /* USER CODE END USART2_MspDeInit 1 */
+  /*##-3- Disable the NVIC for UART ##########################################*/
+  HAL_NVIC_DisableIRQ(USARTx_IRQn);
   }
-
 }
+
+
+
 
 /* USER CODE BEGIN 1 */
 

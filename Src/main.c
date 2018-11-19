@@ -47,13 +47,13 @@
  */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "stm32f4xx_hal.h"
-
-#include "pdm2pcm.h"
 #include "audio_application.h"
-
-/* USER CODE BEGIN Includes */
+#include "stm32f4xx_hal.h"
 #include "save2sd.h"
+#include "pdm2pcm.h"
+
+
+
 
 /* USER CODE END Includes */
 
@@ -76,7 +76,6 @@ UART_HandleTypeDef huart2;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_CRC_Init(void);
 static void MX_SDIO_SD_Init(void);
@@ -117,7 +116,7 @@ int main(void) {
 	/* USER CODE END SysInit */
 
 	/* Initialize all configured peripherals */
-	MX_GPIO_Init();
+
 	MX_USART2_UART_Init();
 	MX_CRC_Init();
 	MX_SDIO_SD_Init();
@@ -189,7 +188,7 @@ void SystemClock_Config(void) {
 	RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV4;
 	RCC_OscInitStruct.PLL.PLLQ = 7;
 	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
-		_Error_Handler(__FILE__, __LINE__);
+
 	}
 
 	/**Initializes the CPU, AHB and APB busses clocks
@@ -202,14 +201,14 @@ void SystemClock_Config(void) {
 	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
 	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK) {
-		_Error_Handler(__FILE__, __LINE__);
+
 	}
 
 	PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_I2S;
 	PeriphClkInitStruct.PLLI2S.PLLI2SN = 192;
 	PeriphClkInitStruct.PLLI2S.PLLI2SR = 2;
 	if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK) {
-		_Error_Handler(__FILE__, __LINE__);
+
 	}
 
 	/**Configure the Systick interrupt time
@@ -229,7 +228,7 @@ static void MX_CRC_Init(void) {
 
 	hcrc.Instance = CRC;
 	if (HAL_CRC_Init(&hcrc) != HAL_OK) {
-		_Error_Handler(__FILE__, __LINE__);
+
 	}
 
 	__HAL_CRC_DR_RESET(&hcrc);
@@ -264,51 +263,12 @@ static void MX_USART2_UART_Init(void) {
 	huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
 	huart2.Init.OverSampling = UART_OVERSAMPLING_16;
 	if (HAL_UART_Init(&huart2) != HAL_OK) {
-		_Error_Handler(__FILE__, __LINE__);
+
 	}
 
 }
 
-/** Configure pins as 
- * Analog
- * Input
- * Output
- * EVENT_OUT
- * EXTI
- */
-static void MX_GPIO_Init(void) {
 
-	GPIO_InitTypeDef GPIO_InitStruct;
-
-	/* GPIO Ports Clock Enable */
-	__HAL_RCC_GPIOC_CLK_ENABLE()
-	;
-	__HAL_RCC_GPIOH_CLK_ENABLE()
-	;
-	__HAL_RCC_GPIOA_CLK_ENABLE()
-	;
-	__HAL_RCC_GPIOB_CLK_ENABLE()
-	;
-	__HAL_RCC_GPIOD_CLK_ENABLE()
-	;
-
-	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-
-	/*Configure GPIO pin : B1_Pin */
-	GPIO_InitStruct.Pin = B1_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
-
-	/*Configure GPIO pin : LD2_Pin */
-	GPIO_InitStruct.Pin = LD2_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
-
-}
 
 /* USER CODE BEGIN 4 */
 
@@ -320,13 +280,7 @@ static void MX_GPIO_Init(void) {
  * @param  line: The line in file as a number.
  * @retval None
  */
-void _Error_Handler(char *file, int line) {
-	/* USER CODE BEGIN Error_Handler_Debug */
-	/* User can add his own implementation to report the HAL error return state */
-	while (1) {
-	}
-	/* USER CODE END Error_Handler_Debug */
-}
+
 
 #ifdef  USE_FULL_ASSERT
 /**

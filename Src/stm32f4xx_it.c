@@ -34,7 +34,9 @@
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx.h"
 #include "stm32f4xx_it.h"
-
+#include "wifi_module.h"
+#include "stm32_spwf_wifi.h"
+#include "wifi_globals.h"
 #include "x_nucleo_cca02m1_audio_f4.h"
 
 /* USER CODE BEGIN 0 */
@@ -171,6 +173,24 @@ void PendSV_Handler(void)
   /* USER CODE END PendSV_IRQn 1 */
 }
 
+void TIMx_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&TimHandle);
+
+}
+
+/**
+  * @brief  This function handles TIM interrupt request.
+  * @param  None
+  * @retval None
+  */
+void TIMp_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&PushTimHandle);
+
+}
+
+
 /**
 * @brief This function handles System tick timer.
 */
@@ -191,14 +211,219 @@ void AUDIO_IN_I2S_IRQHandler(void)
   HAL_DMA_IRQHandler(hAudioInI2s.hdmarx);
 }
 
+//void USARTx_EXTI_IRQHandler(void)
+//{
+//  HAL_GPIO_EXTI_IRQHandler(WiFi_USART_RX_PIN);
+//}
+
+/**
+  * @brief  This function GPIO EXTI Callback.
+  * @param  Pin number of the GPIO generating the EXTI IRQ
+  * @retval None
+  */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  //RX_EXTI_Isr(GPIO_Pin);
+}
+
+/**
+* @brief  Period elapsed callback in non blocking mode
+*         This timer is used for calling back User registered functions with information
+* @param  htim : TIM handle
+* @retval None
+*/
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+#ifndef WIFI_USE_VCOM
+  Wifi_TIM_Handler(htim);
+#endif
+}
+
+/**
+* @brief  HAL_UART_RxCpltCallback
+*         Rx Transfer completed callback
+* @param  UsartHandle: UART handle
+* @retval None
+*/
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandleArg)
+{
+#ifndef WIFI_USE_VCOM
+  WiFi_HAL_UART_RxCpltCallback(UartHandleArg);
+#endif
+}
+
+/**
+* @brief  HAL_UART_TxCpltCallback
+*         Tx Transfer completed callback
+* @param  UsartHandle: UART handle
+* @retval None
+*/
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandleArg)
+{
+#ifndef WIFI_USE_VCOM
+  WiFi_HAL_UART_TxCpltCallback(UartHandleArg);
+#endif
+}
+
+/**
+  * @brief  UART error callbacks
+  * @param  UsartHandle: UART handle
+  * @note   This example shows a simple way to report transfer error, and you can
+  *         add your own implementation.
+  * @retval None
+  */
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *UartHandle)
+{
+  WiFi_HAL_UART_ErrorCallback(UartHandle);
+}
+
 /******************************************************************************/
-/* STM32F4xx Peripheral Interrupt Handlers                                    */
-/* Add here the Interrupt Handlers for the used peripherals.                  */
-/* For the available peripheral interrupt handler names,                      */
-/* please refer to the startup file (startup_stm32f4xx.s).                    */
+/*                 STM32 Peripherals Interrupt Handlers                   */
+/*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */
+/*  available peripheral interrupt handler's name please refer to the startup */
+/*  file (startup_stm32xxx.s).                                            */
 /******************************************************************************/
 
-/* USER CODE BEGIN 1 */
+/**
+  * @brief  This function handles USARTx Handler.
+  * @param  None
+  * @retval None
+  */
+void USARTx_IRQHandler(void)
+{
+  HAL_UART_IRQHandler(&UartWiFiHandle);
+}
 
-/* USER CODE END 1 */
+/**
+  * @brief  This function handles USARTx vcom Handler.
+  * @param  None
+  * @retval None
+  */
+#ifdef USART_PRINT_MSG
+void USARTx_PRINT_IRQHandler(void)
+{
+   HAL_UART_IRQHandler(UartMsgHandle);
+}
+#endif
+
+#ifdef WIFI_USE_VCOM
+
+#ifdef USE_STM32F4XX_NUCLEO
+void DMA1_Stream5_IRQHandler(void)
+{
+   if(LL_DMA_IsActiveFlag_TC5(DMA1) == 1)
+  {
+    LL_DMA_ClearFlag_TC5(DMA1);
+    DMA1_TransferComplete();
+  }
+}
+
+void DMA2_Stream2_IRQHandler(void)
+{
+   if(LL_DMA_IsActiveFlag_TC2(DMA2) == 1)
+  {
+    LL_DMA_ClearFlag_TC2(DMA2);
+    DMA2_TransferComplete();
+  }
+}
+#endif //#ifdef USE_STM32F4XX_NUCLEO
+
+#ifdef USE_STM32L4XX_NUCLEO
+void DMA1_Channel6_IRQHandler(void)
+{
+   if(LL_DMA_IsActiveFlag_TC6(DMA1) == 1)
+  {
+    LL_DMA_ClearFlag_TC6(DMA1);
+    DMA1_TransferComplete();
+  }
+}
+
+void DMA1_Channel5_IRQHandler(void)
+{
+   if(LL_DMA_IsActiveFlag_TC5(DMA1) == 1)
+  {
+    LL_DMA_ClearFlag_TC5(DMA1);
+    DMA2_TransferComplete();
+  }
+}
+#endif //USE_STM32L4XX_NUCLEO
+
+
+#ifdef USE_STM32L0XX_NUCLEO
+
+void DMA_CONSOLE_IRQHANDLER(void)
+{
+  if(LL_DMA_IsActiveFlag_TC5(DMA1) == 1)
+  {
+    LL_DMA_ClearFlag_TC5(DMA1);
+    DMA1_TransferComplete();
+  }
+}
+
+void DMA_WIFI_IRQHANDLER(void)
+{
+  if(LL_DMA_IsActiveFlag_TC3(DMA1) == 1)
+  {
+    LL_DMA_ClearFlag_TC3(DMA1);
+    DMA2_TransferComplete();
+  }
+}
+
+#endif  //USE_STM32L0XX_NUCLEO
+
+
+#ifdef USE_STM32F1xx_NUCLEO
+static uint32_t DMA_IsActiveFlag_TC6(DMA_TypeDef *DMAx);
+static uint32_t DMA_IsActiveFlag_TC5(DMA_TypeDef *DMAx);
+static void DMA_ClearFlag_TC6(DMA_TypeDef *DMAx);
+static void DMA_ClearFlag_TC5(DMA_TypeDef *DMAx);
+
+static uint32_t DMA_IsActiveFlag_TC6(DMA_TypeDef *DMAx)
+{
+  return (READ_BIT(DMAx->ISR ,DMA_FLAG_TC6)==(DMA_FLAG_TC6));
+}
+
+static uint32_t DMA_IsActiveFlag_TC5(DMA_TypeDef *DMAx)
+{
+  return (READ_BIT(DMAx->ISR ,DMA_FLAG_TC5)==(DMA_FLAG_TC5));
+}
+
+static void DMA_ClearFlag_TC6(DMA_TypeDef *DMAx)
+{
+  SET_BIT(DMAx->IFCR , DMA_FLAG_TC6);
+}
+
+static void DMA_ClearFlag_TC5(DMA_TypeDef *DMAx)
+{
+  SET_BIT(DMAx->IFCR , DMA_FLAG_TC5);
+}
+
+void DMA_CONSOLE_IRQHANDLER(void)
+{
+  if(DMA_IsActiveFlag_TC6(DMA1) == 1)
+  {
+    DMA_ClearFlag_TC6(DMA1);
+    DMA1_TransferComplete();
+  }
+}
+
+void DMA_WIFI_IRQHANDLER(void)
+{
+  if(DMA_IsActiveFlag_TC5(DMA1) == 1)
+  {
+    DMA_ClearFlag_TC5(DMA1);
+    DMA2_TransferComplete();
+  }
+}
+#endif //USE_STM32F1xx_NUCLEO
+
+#endif //WIFI_USE_VCOM
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

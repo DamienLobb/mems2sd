@@ -52,49 +52,75 @@
 #define __MAIN_H__
 
 /* Includes ------------------------------------------------------------------*/
+#include "stdint.h"
+#include "wifi_conf.h"
 
-/* USER CODE BEGIN Includes */
+/* Exported types ------------------------------------------------------------*/
+/* Exported constants --------------------------------------------------------*/
 
-/* USER CODE END Includes */
+typedef enum {
+  wifi_state_reset = 0,
+  wifi_state_ready,
+  wifi_state_idle,
+  wifi_state_connected,
+  wifi_state_connecting,
+  wifi_state_socket,
+  wifi_state_socket_write,
+  wifi_state_disconnected,
+  wifi_state_activity,
+  wifi_state_inter,
+  wifi_state_print_data,
+  wifi_state_error,
+  wifi_undefine_state       = 0xFF,
+} wifi_state_t;
 
-/* Private define ------------------------------------------------------------*/
+/* Exported macro ------------------------------------------------------------*/
+/* Exported functions ------------------------------------------------------- */
 
-#define B1_Pin GPIO_PIN_13
-#define B1_GPIO_Port GPIOC
-#define USART_TX_Pin GPIO_PIN_2
-#define USART_TX_GPIO_Port GPIOA
-#define USART_RX_Pin GPIO_PIN_3
-#define USART_RX_GPIO_Port GPIOA
-#define LD2_Pin GPIO_PIN_5
-#define LD2_GPIO_Port GPIOA
-#define TMS_Pin GPIO_PIN_13
-#define TMS_GPIO_Port GPIOA
-#define TCK_Pin GPIO_PIN_14
-#define TCK_GPIO_Port GPIOA
-#define SWO_Pin GPIO_PIN_3
-#define SWO_GPIO_Port GPIOB
+/* Private macro ------------------------------------------------------------ */
+#ifdef USART_PRINT_MSG
 
-/* ########################## Assert Selection ############################## */
-/**
-  * @brief Uncomment the line below to expanse the "assert_param" macro in the 
-  *        HAL drivers code
-  */
-/* #define USE_FULL_ASSERT    1U */
+#ifdef USE_STM32L0XX_NUCLEO
 
-/* USER CODE BEGIN Private defines */
+#define WIFI_UART_MSG                           USART2
+#define USARTx_PRINT_CLK_ENABLE()              __USART2_CLK_ENABLE()
+#define USARTx_PRINT_RX_GPIO_CLK_ENABLE()      __GPIOA_CLK_ENABLE()
+#define USARTx_PRINT_TX_GPIO_CLK_ENABLE()      __GPIOA_CLK_ENABLE()
 
-/* USER CODE END Private defines */
+#define USARTx_PRINT_FORCE_RESET()             __USART2_FORCE_RESET()
+#define USARTx_PRINT_RELEASE_RESET()           __USART2_RELEASE_RESET()
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-void _Error_Handler(char *, int);
+#define PRINTMSG_USARTx_TX_AF                       GPIO_AF4_USART2
+#define PRINTMSG_USARTx_RX_AF                       GPIO_AF4_USART2
 
-#define Error_Handler() _Error_Handler(__FILE__, __LINE__)
-#ifdef __cplusplus
-}
-#endif
+#endif //USE_STM32L0XX_NUCLEO
 
-#endif /* __MAIN_H__ */
+#if defined USE_STM32F4XX_NUCLEO
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+#define WIFI_UART_MSG                           USART2
+#define USARTx_PRINT_CLK_ENABLE()              __HAL_RCC_USART2_CLK_ENABLE()
+#define USARTx_PRINT_RX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOA_CLK_ENABLE()
+#define USARTx_PRINT_TX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOA_CLK_ENABLE()
+
+#define USARTx_PRINT_FORCE_RESET()             __HAL_RCC_USART2_FORCE_RESET()
+#define USARTx_PRINT_RELEASE_RESET()           __HAL_RCC_USART2_RELEASE_RESET()
+
+#define PRINTMSG_USARTx_TX_AF                       GPIO_AF7_USART2
+#define PRINTMSG_USARTx_RX_AF                       GPIO_AF7_USART2
+
+#endif //(USE_STM32F1xx_NUCLEO) || (USE_STM32F4XX_NUCLEO)
+
+#define WiFi_USART_PRINT_TX_PIN                    GPIO_PIN_2
+#define WiFi_USART_PRINT_TX_GPIO_PORT              GPIOA
+#define WiFi_USART_PRINT_RX_PIN                    GPIO_PIN_3
+#define WiFi_USART_PRINT_RX_GPIO_PORT              GPIOA
+
+
+/* Definition for USARTx's NVIC */
+#define USARTx_PRINT_IRQn                      USART2_IRQn
+#define USARTx_PRINT_IRQHandler                USART2_IRQHandler
+
+#endif //USART_PRINT_MSG
+
+
+#endif /* __MAIN_H */
