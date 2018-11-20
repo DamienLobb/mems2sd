@@ -129,12 +129,11 @@
 #define RINGBUF_SIZE                            1024
 #endif
 
-#if defined(USE_STM32F4XX_NUCLEO) || defined(USE_STM32L4XX_NUCLEO)
+#if defined USE_STM32F4XX_NUCLEO
 #define DMA_BUFFER_SIZE                         2048//8192
 #define DMA_BUFFER_END_INDEX                    2047//8191
 #else
-#define DMA_BUFFER_SIZE                         1
-#define DMA_BUFFER_END_INDEX                    1
+
 #endif
 #define MAX_BUFFER_GLOBAL                       512
 #define MAX_WIFI_SCAN_NETWORK                   256
